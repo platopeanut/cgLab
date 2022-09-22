@@ -1,0 +1,5 @@
+# ninja log v5
+3	1208	6855470690263993	CMakeFiles/template.dir/main.cpp.obj	6db80554cf37e209
+8	1266	6855469978846921	CMakeFiles/template.dir/display/win32.cpp.obj	c258fb37731739c6
+1209	1293	6855470691093912	template.exe	6b7bc6a124c1ad0a
+5	1269	6855469978877005	CMakeFiles/template.dir/display/utils.cpp.obj	f070c26c9ee143f2
