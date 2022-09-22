@@ -12,7 +12,7 @@
   - 向i行j列像素点设置rgb
 - update
   - 更新framebuffer
-- log
+- Log
   - 打印
 - registerTimer
   - 注册定时器
