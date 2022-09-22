@@ -1,3 +1,7 @@
+/**
+ *  ShaderToy Example
+ */
+
 #include "./display/win32.h"
 #include <cmath>
 
