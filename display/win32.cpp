@@ -63,7 +63,7 @@ WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             hDC = GetDC(hwnd);
             hMemDC = CreateCompatibleDC(hDC);
             LPVOID pImgData;
-            BITMAPINFO bitmapInfo = {{sizeof(BITMAPINFOHEADER), WIDTH, -HEIGHT, 1, 32, BI_RGB,
+            BITMAPINFO bitmapInfo = {{sizeof(BITMAPINFOHEADER), WIDTH, HEIGHT, 1, 32, BI_RGB,
                                       WIDTH * HEIGHT * 4, 0, 0, 0, 0 }  };
             hBitmap = CreateDIBSection(
                     hMemDC,

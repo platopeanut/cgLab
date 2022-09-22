@@ -23,7 +23,7 @@ extern Byte* pFrameBuffer;
 
 /* Tool Function (Implemented in utils.cpp) */
 
-// i行j列
+// i列j行
 #define setPixel(i, j, r, g, b) \
         pFrameBuffer[((j)*WIDTH+(i))*4  ]=(b); \
         pFrameBuffer[((j)*WIDTH+(i))*4+1]=(g); \

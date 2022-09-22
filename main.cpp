@@ -1,9 +1,37 @@
 #include "./display/win32.h"
-#include <cmath>
+#include "./draw/line.h"
+#include "./draw/polygon.h"
+#include <iostream>
 
-void init() { registerTimer(1, 20); }
+void init() {
+    lineSimple(100, 100, 150, 400, 255, 0, 0);
+    lineSimple2(200, 100, 250, 400, 255, 0, 0);
+    int size = 6;
+    auto* vertices = new Point2I[size];
+    int i = 0;
+    vertices[i++].setXY(2, 2);
+    vertices[i++].setXY(5, 1);
+    vertices[i++].setXY(11, 3);
+    vertices[i++].setXY(11, 8);
+    vertices[i++].setXY(5, 5);
+    vertices[i  ].setXY(2, 7);
+    // transform
+    for (i = 0; i < size; ++i) {
+        vertices[i].x *= 20;
+        vertices[i].x += 300;
+        vertices[i].y *= 20;
+        vertices[i].y += 200;
+    }
+    Bucket* NET = buildNET(vertices, size);
+    std::cout << "NET:" << std::endl;
+    std::cout << *NET;
+    buildAET(NET);
+    std::cout << "AET:" << std::endl;
+    std::cout << *NET << std::endl;
+    shaderAET(NET, 0, 255, 0);
+}
 
-void destroy() { freeTimer(1); }
+void destroy() {}
 
 void onKeyDown(WPARAM key) {}
 
@@ -13,18 +41,4 @@ void onMouseDown(WORD x, WORD y) {}
 
 void onMouseUp(WORD x, WORD y) {}
 
-double iTime = 0;
-void onTimer(WPARAM id) {
-    if (id == 1) {
-        for (int j = 0; j < HEIGHT; ++j) {
-            for (int i = 0; i < WIDTH; ++i) {
-                double r = 0.5 + 0.5 * cos(iTime + i * 1.0 / WIDTH);
-                double g = 0.5 + 0.5 * cos(iTime + j * 1.0 / HEIGHT + 2);
-                double b = 0.5 + 0.5 * cos(iTime + i * 1.0 / WIDTH + 4);
-                setPixel(i, j, (int)(r * 255), (int)(g * 255), (int)(b * 255));
-            }
-        }
-        update();
-        iTime += 0.05;
-    }
-}
+void onTimer(WPARAM id) {}
