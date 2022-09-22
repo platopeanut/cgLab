@@ -33,7 +33,7 @@ extern Byte* pFrameBuffer;
 // 更新framebuffer
 #define update() BitBlt(hDC, 0, 0, WIDTH, HEIGHT, hMemDC, 0, 0, SRCCOPY)
 // 打印
-void log(const std::string& text);
+void Log(const std::string& text);
 // 注册定时器
 void registerTimer(UINT id, UINT interval);
 // 释放定时器

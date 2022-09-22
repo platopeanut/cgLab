@@ -4,7 +4,5 @@ project(cgLab)
 set(CMAKE_CXX_STANDARD 11)
 
 file(GLOB display display/**)
-file(GLOB draw draw/**)
-file(GLOB utils utils/**)
 
-add_executable(template main.cpp ${display} ${draw} ${utils})
+add_executable(template main.cpp ${display})

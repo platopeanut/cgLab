@@ -9,7 +9,7 @@
  * 如果需要打印非字符串类型的数据，请使用std::to_string()将其转换为字符串类型
  * 例如：log("Hello" + std::to_string(123));
  */
-void log(const std::string& text) {
+void Log(const std::string& text) {
     WriteConsole(hConsole, text.c_str(), text.size(), nullptr, nullptr);
 }
 
