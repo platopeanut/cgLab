@@ -13,5 +13,10 @@ chp2: Draw Primitive
   - DDA2
   - Bresenham
   - Bresenham2
+- Circle
+  - Simple
+  - Simple2
+  - MidPoint
+  - MidPoint2
 - Polygon
   - Scan-Line

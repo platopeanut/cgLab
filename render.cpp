@@ -6,13 +6,16 @@
 
 #include "./draw/line.h"
 #include "./draw/polygon.h"
+#include "./draw/circle.h"
 
 Point2I* polygon;
 void drawLine();
+void drawCircle();
 void drawPolygon();
 
 void init() {
     drawLine();
+    drawCircle();
     drawPolygon();
 }
 
@@ -35,6 +38,16 @@ void drawLine() {
     lineBresenham(fromX + incrX * cnt, fromY, toX + incrX * cnt, toY, 255, 0, 0);
     cnt++;
     lineBresenham2(fromX + incrX * cnt, fromY, toX + incrX * cnt, toY, 255, 0, 0);
+}
+
+void drawCircle() {
+    int cx = 150, cy = 450, radius=100;
+    int r = 0, g = 255, b = 0;
+    int offset = 30, i = 0;
+    circleSimple(cx + offset * (i++), cy, radius, r, g, b);
+    circleSimple2(cx + offset * (i++), cy, radius, r, g, b);
+    circleMidPoint(cx + offset * (i++), cy, radius, r, g, b);
+    circleMidPoint2(cx + offset * i, cy, radius, r, g, b);
 }
 
 void drawPolygon() {
@@ -65,3 +78,4 @@ void drawPolygon() {
     }
     polygonScanLine(polygon, size, 0, 255, 255);
 }
+
