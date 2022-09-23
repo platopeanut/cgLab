@@ -42,6 +42,27 @@ std::ostream &operator<<(std::ostream &os, const Bucket &bucket) {
     return os;
 }
 
+Bucket::~Bucket() {
+//    std::cout << "\nFree Bucket:" << scanLine;
+    // 删除本身的triples
+    Triple* currTri = head;
+    while (head != nullptr) {
+        head = head->next;
+//        std::cout <<"->("<< currTri->x << ", " << currTri->deltaX << ", " << currTri->yMax << ")";
+        delete currTri;
+        currTri = head;
+    }
+}
+
+void Bucket::freeBuckets(Bucket* head) {
+    Bucket* curr = head;
+    while (head != nullptr) {
+        head = head->next;
+        delete curr;
+        curr = head;
+    }
+}
+
 void findPolygonYRange(Point2I* polygon, int size, int &yMin, int &yMax) {
     yMin = yMax = polygon[0].y;
     for (int i = 1; i < size; ++i) {
@@ -123,4 +144,15 @@ void shaderAET(Bucket *AET, int r, int g, int b) {
         }
         currBucket = currBucket->next;
     }
+}
+
+void polygonScanLine(Point2I *polygon, int size, int r, int g, int b) {
+    Bucket* NET = buildNET(polygon, size);
+//    std::cout << "NET:" << std::endl;
+//    std::cout << *NET;
+    buildAET(NET);
+//    std::cout << "AET:" << std::endl;
+//    std::cout << *NET << std::endl;
+    shaderAET(NET, r, g, b);
+    Bucket::freeBuckets(NET);
 }

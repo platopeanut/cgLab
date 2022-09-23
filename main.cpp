@@ -3,35 +3,42 @@
 #include "./draw/polygon.h"
 #include <iostream>
 
+Point2I* polygon;
+
 void init() {
     lineSimple(100, 100, 150, 400, 255, 0, 0);
     lineSimple2(200, 100, 250, 400, 255, 0, 0);
-    int size = 6;
-    auto* vertices = new Point2I[size];
+//    int size = 6;
+//    polygon = new Point2I[size];
+//    int i = 0;
+//    polygon[i++].setXY(2, 2);
+//    polygon[i++].setXY(5, 1);
+//    polygon[i++].setXY(11, 3);
+//    polygon[i++].setXY(11, 8);
+//    polygon[i++].setXY(5, 5);
+//    polygon[i  ].setXY(2, 7);
+
+    int size = 4;
+    polygon = new Point2I[size];
     int i = 0;
-    vertices[i++].setXY(2, 2);
-    vertices[i++].setXY(5, 1);
-    vertices[i++].setXY(11, 3);
-    vertices[i++].setXY(11, 8);
-    vertices[i++].setXY(5, 5);
-    vertices[i  ].setXY(2, 7);
+    polygon[i++].setXY(1, 1);
+    polygon[i++].setXY(10, 1);
+    polygon[i++].setXY(10, 10);
+    polygon[i++].setXY(1, 10);
+
     // transform
     for (i = 0; i < size; ++i) {
-        vertices[i].x *= 20;
-        vertices[i].x += 300;
-        vertices[i].y *= 20;
-        vertices[i].y += 200;
+        polygon[i].x *= 20;
+        polygon[i].x += 300;
+        polygon[i].y *= 20;
+        polygon[i].y += 200;
     }
-    Bucket* NET = buildNET(vertices, size);
-    std::cout << "NET:" << std::endl;
-    std::cout << *NET;
-    buildAET(NET);
-    std::cout << "AET:" << std::endl;
-    std::cout << *NET << std::endl;
-    shaderAET(NET, 0, 255, 0);
+    polygonScanLine(polygon, size, 0, 255, 255);
 }
 
-void destroy() {}
+void destroy() {
+    delete polygon;
+}
 
 void onKeyDown(WPARAM key) {}
 

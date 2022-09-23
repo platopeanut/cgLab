@@ -35,6 +35,9 @@ public:
 
     friend std::ostream &operator<<(std::ostream &os, const Bucket &bucket);
 
+    ~Bucket();
+
+    static void freeBuckets(Bucket* head);
 };
 
 void findPolygonYRange(Point2I* polygon, int size, int& yMin, int& yMax);
@@ -48,7 +51,7 @@ void buildAET(Bucket* NET);
 
 void shaderAET(Bucket* AET, int r, int g, int b);
 
-
+void polygonScanLine(Point2I* polygon, int size, int r, int g, int b);
 
 
 #endif //CGLAB_POLYGON_H
