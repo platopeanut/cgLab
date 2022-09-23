@@ -7,4 +7,4 @@ file(GLOB display display/**)
 file(GLOB draw draw/**)
 file(GLOB utils utils/**)
 
-add_executable(template main.cpp ${display} ${draw} ${utils})
+add_executable(template lifeCycle.cpp render.cpp ${display} ${draw} ${utils})

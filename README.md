@@ -1,6 +1,6 @@
 # Computer Graphics Lab in CQU
 
-## branch Info
+## Branch Info
 
 chp2: Draw Primitive
 
