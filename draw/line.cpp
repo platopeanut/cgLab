@@ -8,6 +8,12 @@
 #include "line.h"
 #include "../display/win32.h"
 
+inline void swap(int& a, int& b) {
+    int tmp = a;
+    a = b;
+    b = tmp;
+}
+
 void lineSimple(int x0, int y0, int x1, int y1, int r, int g, int b) {
     double k = (y1 - y0) * 1.0 / (x1 - x0);
     double m = y0 - k * x0;
@@ -33,20 +39,14 @@ void lineSimple2(int x0, int y0, int x1, int y1, int r, int g, int b) {
 
 // 改进：增量 (没有考虑直线abs(k)<=1)
 void lineDDA(int x0, int y0, int x1, int y1, int r, int g, int b) {
-    double k = (y1 - y0) * 1.0 / (x1 - x0);
-    double y;
-    int x, xMax;
-    // 找到直线左端点
-    if (x0 < x1) {
-        x = x0;
-        y = y0;
-        xMax = x1;
-    } else {
-        x = x1;
-        y = y1;
-        xMax = x0;
+    if (x0 > x1) {
+        swap(x0, x1);
+        swap(y0, y1);
     }
-    for (;x <= xMax; x++) {
+    double k = (y1 - y0) * 1.0 / (x1 - x0);
+    int x = x0;
+    double y = y0;
+    for (;x <= x1; x++) {
         // (int) (y + 0.5) 也可进行四舍五入
         setPixel(x, (int) round(y), r, g, b);
         y += k;
@@ -68,12 +68,16 @@ void lineDDA2(int x0, int y0, int x1, int y1, int r, int g, int b) {
     }
 }
 
-// 改进：计算转变为判断 (默认x0<x1, abs(k)<=1)
+// 改进：计算转变为判断         限制：0 <= k <= 1
 void lineBresenham(int x0, int y0, int x1, int y1, int r, int g, int b) {
+    if (x0 > x1) {
+        swap(x0, x1);
+        swap(y0, y1);
+    }
     double k = (y1 - y0) * 1.0 / (x1 - x0);
     double e = -0.5;
-    int y = y0;
-    for (int x = x0; x <= x1; x++) {
+    int x = x0, y = y0;
+    for (; x <= x1; x++) {
         setPixel(x, y, r, g, b);
         e += k;
         if (e >= 0) {
@@ -83,13 +87,16 @@ void lineBresenham(int x0, int y0, int x1, int y1, int r, int g, int b) {
     }
 }
 
-// 改进：浮点运算转为整数运算 (默认x0<x1, abs(k)<=1)
+// 改进：浮点运算转为整数运算    限制：0 <= k <= 1
 void lineBresenham2(int x0, int y0, int x1, int y1, int r, int g, int b) {
+    if (x0 > x1) {
+        swap(x0, x1);
+        swap(y0, y1);
+    }
+    int x = x0, y = y0;
     int dx = x1 - x0;
     int dy = y1 - y0;
     int e = -dx;
-    int x = x0;
-    int y = y0;
     for (int i = 0; i < dx; i++) {
         setPixel(x, y, r, g, b);
         x ++;
@@ -98,5 +105,55 @@ void lineBresenham2(int x0, int y0, int x1, int y1, int r, int g, int b) {
             y ++;
             e -= 2 * dx;
         }
+    }
+}
+
+// 使用判别式：kx+m-y>0?      限制：0 <= k <= 1
+void lineMidPoint(int x0, int y0, int x1, int y1, int r, int g, int b) {
+    if (x0 > x1) {
+        swap(x0, x1);
+        swap(y0, y1);
+    }
+    int x = x0;
+    int y = y0;
+    double k = (y1 - y0) * 1.0 / (x1 - x0);
+    double d = k;
+    setPixel(x, y, r, g, b);
+    while (x <= x1) {
+        if (d > 0) {
+            x ++;
+            y ++;
+            d += k - 1;
+        } else {
+            x ++;
+            d += k;
+        }
+        setPixel(x, y, r, g, b);
+    }
+}
+
+// 使用判别式：Ax+By+C>0?     限制：0 <= k <= 1      改进：避免浮点运算
+void lineMidPoint2(int x0, int y0, int x1, int y1, int r, int g, int b) {
+    if (x0 > x1) {
+        swap(x0, x1);
+        swap(y0, y1);
+    }
+    int A = y0 - y1;
+    int B = x1 - x0;
+    int d = 2 * A + B;
+    int d1 = 2 * A;         // to right
+    int d2 = 2 * (A + B);   // to up
+    int x = x0, y = y0;
+    setPixel(x, y, r, g, b);
+    while (x <= x1) {
+        if (d < 0) {
+            x ++;
+            y ++;
+            d += d2;
+        } else {
+            x ++;
+            d += d1;
+        }
+        setPixel(x, y, r, g, b);
     }
 }

@@ -7,8 +7,11 @@
 #include "./draw/line.h"
 #include "./draw/polygon.h"
 #include "./draw/circle.h"
+#include "./display/win32.h"
 
 Point2I* polygon;
+// 记录直线起点位置
+int lastX = -1, lastY = -1;
 void drawLine();
 void drawCircle();
 void drawPolygon();
@@ -21,6 +24,19 @@ void init() {
 
 void destroy() { delete polygon; }
 
+void onMouseDown(WORD x, WORD y) {
+    if (lastX == -1 && lastY == -1) {
+        lastX = x;
+        lastY = y;
+        setPixel(x, HEIGHT - y, 255, 0, 0);
+    } else {
+        lineBresenham(lastX, HEIGHT - lastY, x, HEIGHT - y, 255, 0, 0);
+        lastX = -1;
+        lastY = -1;
+    }
+    update();
+}
+
 void drawLine() {
     fpDrawLine fpLines[] = {
             lineSimple,
@@ -28,7 +44,9 @@ void drawLine() {
             lineDDA,
             lineDDA2,
             lineBresenham,
-            lineBresenham2
+            lineBresenham2,
+            lineMidPoint,
+            lineMidPoint2,
     };
     // k < 1
     int fromX1 = 50, fromY1 = 100, toX1 = 300, toY1 = 200;

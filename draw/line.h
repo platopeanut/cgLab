@@ -17,5 +17,8 @@ void lineDDA2(int x0, int y0, int x1, int y1, int r, int g, int b);
 void lineBresenham(int x0, int y0, int x1, int y1, int r, int g, int b);
 void lineBresenham2(int x0, int y0, int x1, int y1, int r, int g, int b);
 
+void lineMidPoint(int x0, int y0, int x1, int y1, int r, int g, int b);
+void lineMidPoint2(int x0, int y0, int x1, int y1, int r, int g, int b);
+
 
 #endif //CGLAB_LINE_H
