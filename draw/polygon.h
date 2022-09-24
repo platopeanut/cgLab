@@ -13,6 +13,10 @@
 
 // Polygon: Point2I[]
 
+// 定义画多边形函数的函数指针类型
+typedef void (*fpDrawPolygon) (Point2I* polygon, int size, int r, int g, int b);
+
+
 class Triple {
 public:
     double x;

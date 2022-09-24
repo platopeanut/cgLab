@@ -7,6 +7,8 @@
 #ifndef CGLAB_LINE_H
 #define CGLAB_LINE_H
 
+// 定义画线函数的函数指针类型
+typedef void (*fpDrawLine)(int x0, int y0, int x1, int y1, int r, int g, int b);
 
 void lineSimple(int x0, int y0, int x1, int y1, int r, int g, int b);
 void lineSimple2(int x0, int y0, int x1, int y1, int r, int g, int b);

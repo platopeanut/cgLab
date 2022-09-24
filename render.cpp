@@ -22,35 +22,45 @@ void init() {
 void destroy() { delete polygon; }
 
 void drawLine() {
-    // k > 1
-//    int fromX = 50, fromY = 100, toX = 100, toY = 400;
+    fpDrawLine fpLines[] = {
+            lineSimple,
+            lineSimple2,
+            lineDDA,
+            lineDDA2,
+            lineBresenham,
+            lineBresenham2
+    };
     // k < 1
-    int fromX = 50, fromY = 100, toX = 300, toY = 200;
-    int incrX = 20, cnt=0;
-    lineSimple(fromX + incrX * cnt, fromY, toX + incrX * cnt, toY, 255, 0, 0);
-    cnt++;
-    lineSimple2(fromX + incrX * cnt, fromY, toX + incrX * cnt, toY, 255, 0, 0);
-    cnt++;
-    lineDDA(fromX + incrX * cnt, fromY, toX + incrX * cnt, toY, 255, 0, 0);
-    cnt++;
-    lineDDA2(fromX + incrX * cnt, fromY, toX + incrX * cnt, toY, 255, 0, 0);
-    cnt++;
-    lineBresenham(fromX + incrX * cnt, fromY, toX + incrX * cnt, toY, 255, 0, 0);
-    cnt++;
-    lineBresenham2(fromX + incrX * cnt, fromY, toX + incrX * cnt, toY, 255, 0, 0);
+    int fromX1 = 50, fromY1 = 100, toX1 = 300, toY1 = 200;
+    // k > 1
+    int fromX2 = 50, fromY2 = 100, toX2 = 100, toY2 = 300;
+    int incrX = 20;
+    for (int i = 0; i < sizeof(fpLines) / sizeof(fpDrawLine); ++i) {
+        fpLines[i](fromX1 + incrX * i, fromY1, toX1 + incrX * i, toY1, 255, 0, 0);
+        fpLines[i](fromX2 + incrX * i, fromY2, toX2 + incrX * i, toY2, 255, 0, 0);
+    }
 }
 
 void drawCircle() {
+    fpDrawCircle fpCircles[] = {
+            circleSimple,
+            circleSimple2,
+            circleMidPoint,
+            circleMidPoint2
+    };
+
     int cx = 150, cy = 450, radius=100;
     int r = 0, g = 255, b = 0;
-    int offset = 30, i = 0;
-    circleSimple(cx + offset * (i++), cy, radius, r, g, b);
-    circleSimple2(cx + offset * (i++), cy, radius, r, g, b);
-    circleMidPoint(cx + offset * (i++), cy, radius, r, g, b);
-    circleMidPoint2(cx + offset * i, cy, radius, r, g, b);
+    int offset = 30;
+
+    for (int i = 0; i < sizeof(fpCircles) / sizeof(fpDrawCircle); ++i) {
+        fpCircles[i](cx + offset * i, cy, radius, r, g, b);
+    }
 }
 
 void drawPolygon() {
+    fpDrawPolygon fpPolygon = polygonScanLine;
+
     int size = 6;
     polygon = new Point2I[size];
     int i = 0;
@@ -76,6 +86,7 @@ void drawPolygon() {
         polygon[i].y *= 20;
         polygon[i].y += 200;
     }
-    polygonScanLine(polygon, size, 0, 255, 255);
+
+    fpPolygon(polygon, size, 0, 255, 255);
 }
 
