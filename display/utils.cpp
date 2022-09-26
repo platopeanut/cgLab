@@ -29,3 +29,11 @@ void registerTimer(UINT id, UINT interval) {
 void freeTimer(UINT id) {
     KillTimer(gHwnd, id);
 }
+
+/**
+ * 设置窗口标题
+ * @param title     标题名称
+ */
+void setWindowTitle(const std::string& title) {
+    SetWindowText(gHwnd, title.c_str());
+}

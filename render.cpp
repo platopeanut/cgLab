@@ -8,18 +8,26 @@
 #include "./draw/polygon.h"
 #include "./draw/circle.h"
 #include "./display/win32.h"
+#include <chrono>
 
 Point2I* polygon;
+std::string guideInfo = "Use 1,2,3 to switch line algorithm, Use Up,Down to change line width";
+std::string lineNames[] = { "DDA", "Bresenham", "MidPoint" };
+fpDrawLine lineFun[] = { lineDDA2, lineBresenham2, lineMidPoint2 };
+int currIndex = 0;  // 当前算法索引
+int lineWidth = 1;
 // 记录直线起点位置
 int lastX = -1, lastY = -1;
 void drawLine();
 void drawCircle();
 void drawPolygon();
+void drawLineWithWidth(int x1, int y1, int x2, int y2, int r, int g, int b);
 
 void init() {
-    drawLine();
-    drawCircle();
-    drawPolygon();
+    setWindowTitle(guideInfo);
+//    drawLine();
+//    drawCircle();
+//    drawPolygon();
 }
 
 void destroy() { delete polygon; }
@@ -30,11 +38,26 @@ void onMouseDown(WORD x, WORD y) {
         lastY = y;
         setPixel(x, HEIGHT - y, 255, 0, 0);
     } else {
-        lineBresenham(lastX, HEIGHT - lastY, x, HEIGHT - y, 255, 0, 0);
+        drawLineWithWidth(lastX, HEIGHT - lastY, x, HEIGHT - y, 255, 0, 0);
         lastX = -1;
         lastY = -1;
     }
     update();
+}
+
+
+void onKeyDown(WPARAM key) {
+    if (key == '1' || key == '2' || key == '3') {
+        currIndex = (int) (key - '1');
+    } else if (key == VK_UP) {
+        lineWidth ++;
+    } else if (key == VK_DOWN) {
+        if (lineWidth > 1) lineWidth --;
+    } else {
+        setWindowTitle(guideInfo);
+        return;
+    }
+    setWindowTitle("Curr: " + lineNames[currIndex] + " | Line Width: " + std::to_string(lineWidth));
 }
 
 void drawLine() {
@@ -108,3 +131,16 @@ void drawPolygon() {
     fpPolygon(polygon, size, 0, 255, 255);
 }
 
+// 根据lineWidth画线
+void drawLineWithWidth(int x1, int y1, int x2, int y2, int r, int g, int b) {
+    // 没有边界检测
+    auto start = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < lineWidth; ++i) {
+        lineFun[currIndex](x1-lineWidth/2+i, y1, x2-lineWidth/2+i, y2, r, g, b);
+    }
+    auto finish = std::chrono::high_resolution_clock::now();
+    auto cost = std::chrono::duration_cast<std::chrono::nanoseconds>(finish - start).count();
+    setWindowTitle("Curr: " + lineNames[currIndex]
+            + " | Line Width: " + std::to_string(lineWidth)
+            + "| Cost: " + std::to_string((double) cost / 1e+6) + "ms");
+}

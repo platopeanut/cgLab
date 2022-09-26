@@ -38,6 +38,8 @@ void Log(const std::string& text);
 void registerTimer(UINT id, UINT interval);
 // 释放定时器
 void freeTimer(UINT id);
+// 设置窗口标题
+void setWindowTitle(const std::string& title);
 
 /* External Interface (Implemented in main.cpp) */
 void init();

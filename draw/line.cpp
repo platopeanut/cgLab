@@ -5,6 +5,7 @@
 */
 
 #include <cmath>
+#include <iostream>
 #include "line.h"
 #include "../display/win32.h"
 
@@ -87,18 +88,39 @@ void lineBresenham(int x0, int y0, int x1, int y1, int r, int g, int b) {
     }
 }
 
-// 改进：浮点运算转为整数运算    限制：0 <= k <= 1
+// 改进：浮点运算转为整数运算
 void lineBresenham2(int x0, int y0, int x1, int y1, int r, int g, int b) {
     if (x0 > x1) {
         swap(x0, x1);
         swap(y0, y1);
+    }
+    bool negativeFlag = false;      // when k < 0
+    if (y1 < y0) {
+        negativeFlag = true;
+        y1 = 2 * y0 - y1;
+    }
+    bool steepFlag = false;         // when abs(k) > 1
+    if (y1 - y0 > x1 - x0) {
+        steepFlag = true;
+        int tmpX1 = x1;
+        x1 = y1 - y0 + x0;
+        y1 = tmpX1 - x0 + y0;
     }
     int x = x0, y = y0;
     int dx = x1 - x0;
     int dy = y1 - y0;
     int e = -dx;
     for (int i = 0; i < dx; i++) {
-        setPixel(x, y, r, g, b);
+        int finalX = x, finalY = y;
+        if (steepFlag) {
+            int tmpFinalX = finalX;
+            finalX = finalY - y0 + x0;
+            finalY = tmpFinalX - x0 + y0;
+        }
+        if (negativeFlag) {
+            finalY = 2 * y0 - finalY;
+        }
+        setPixel(finalX, finalY, r, g, b);
         x ++;
         e += 2 * dy;
         if (e >= 0) {
@@ -132,11 +154,23 @@ void lineMidPoint(int x0, int y0, int x1, int y1, int r, int g, int b) {
     }
 }
 
-// 使用判别式：Ax+By+C>0?     限制：0 <= k <= 1      改进：避免浮点运算
+// 使用判别式：Ax+By+C>0?     改进：避免浮点运算
 void lineMidPoint2(int x0, int y0, int x1, int y1, int r, int g, int b) {
     if (x0 > x1) {
         swap(x0, x1);
         swap(y0, y1);
+    }
+    bool negativeFlag = false;      // when k < 0
+    if (y1 < y0) {
+        negativeFlag = true;
+        y1 = 2 * y0 - y1;
+    }
+    bool steepFlag = false;         // when abs(k) > 1
+    if (y1 - y0 > x1 - x0) {
+        steepFlag = true;
+        int tmpX1 = x1;
+        x1 = y1 - y0 + x0;
+        y1 = tmpX1 - x0 + y0;
     }
     int A = y0 - y1;
     int B = x1 - x0;
@@ -154,6 +188,15 @@ void lineMidPoint2(int x0, int y0, int x1, int y1, int r, int g, int b) {
             x ++;
             d += d1;
         }
-        setPixel(x, y, r, g, b);
+        int finalX = x, finalY = y;
+        if (steepFlag) {
+            int tmpFinalX = finalX;
+            finalX = finalY - y0 + x0;
+            finalY = tmpFinalX - x0 + y0;
+        }
+        if (negativeFlag) {
+            finalY = 2 * y0 - finalY;
+        }
+        setPixel(finalX, finalY, r, g, b);
     }
 }
