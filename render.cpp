@@ -36,9 +36,9 @@ void onMouseDown(WORD x, WORD y) {
     if (lastX == -1 && lastY == -1) {
         lastX = x;
         lastY = y;
-        setPixel(x, HEIGHT - y, 255, 0, 0);
+        setPixel(x, HEIGHT - y, 255, 255, 255);
     } else {
-        drawLineWithWidth(lastX, HEIGHT - lastY, x, HEIGHT - y, 255, 0, 0);
+        drawLineWithWidth(lastX, HEIGHT - lastY, x, HEIGHT - y, 255, 255, 255);
         lastX = -1;
         lastY = -1;
     }
