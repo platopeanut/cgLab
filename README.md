@@ -7,21 +7,32 @@ chp2: Draw Primitive
 ## Implemented Algorithms
 
 - Line
-    - Simple
-    - Simple2
-    - DDA
-    - DDA2
-    - Bresenham
-    - Bresenham2
-    - MidPoint
-    - MidPoint2
+    - [x] Simple
+    - [x] Simple2
+    - [x] DDA
+    - [x] DDA2
+    - [x] Bresenham
+    - [x] Bresenham2
+    - [x] MidPoint
+    - [x] MidPoint2
 - Circle
-    - Simple
-    - Simple2
-    - MidPoint
-    - MidPoint2
+    - [x] Simple
+    - [x] Simple2
+    - [x] MidPoint
+    - [x] MidPoint2
 - Polygon
-    - Scan-Line
+    - [x] Scan-Line
+    - [ ] 边缘填充算法
+      - [ ] 以扫描线为中心
+      - [ ] 以边为中心
+    - [ ] 边界标志算法
+- 区域填充算法
+  - [ ] 4连通
+  - [ ] 8连通
+  - [ ] 种子填充算法
+- Antialiasing
+  - [x] Unweighted Area Sampling
+  - [x] Weighted Area Sampling
 
 ## General Line Drawing Algorithm
 In the line drawing algorithm, some algorithms are limited by _x1 >= x0_ and the range of **K**(_0 <= k <= 1_).
