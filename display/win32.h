@@ -40,6 +40,10 @@ void registerTimer(UINT id, UINT interval);
 void freeTimer(UINT id);
 // 设置窗口标题
 void setWindowTitle(const std::string& title);
+// 复制当前帧，需要自己提前分配空间，大小为：WIDTH * HEIGHT * 4(Byte)
+void getFrame(Byte* pFrame);
+// 设置当前帧，需要自己提前分配空间，大小为：WIDTH * HEIGHT * 4(Byte)
+void setFrame(const Byte* pFrame);
 
 /* External Interface (Implemented in main.cpp) */
 void init();

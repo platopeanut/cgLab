@@ -37,3 +37,15 @@ void freeTimer(UINT id) {
 void setWindowTitle(const std::string& title) {
     SetWindowText(gHwnd, title.c_str());
 }
+
+void getFrame(Byte *pFrame) {
+    for (int i = 0; i < WIDTH * HEIGHT * 4; ++i) {
+        pFrame[i] = pFrameBuffer[i];
+    }
+}
+
+void setFrame(const Byte *pFrame) {
+    for (int i = 0; i < WIDTH * HEIGHT * 4; ++i) {
+        pFrameBuffer[i] = pFrame[i];
+    }
+}

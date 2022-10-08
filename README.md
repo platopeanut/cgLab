@@ -20,6 +20,9 @@ chp2: Draw Primitive
     - [x] Simple2
     - [x] MidPoint
     - [x] MidPoint2
+    - [ ] Bresenham
+- Ellipse
+    - [ ] MidPoint
 - Polygon
     - [x] Scan-Line
     - [ ] 边缘填充算法

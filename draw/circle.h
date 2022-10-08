@@ -10,11 +10,17 @@
 // 定义画圆函数的函数指针类型
 typedef void (*fpDrawCircle) (int x, int y, int radius, int r, int g, int b);
 
+// ---------------------Circle---------------------------
 void circleSimple(int x, int y, int radius, int r, int g, int b);
 void circleSimple2(int x, int y, int radius, int r, int g, int b);
 void circleMidPoint(int x, int y, int radius, int r, int g, int b);
 void circleMidPoint2(int x, int y, int radius, int r, int g, int b);
+void circleBresenham(int x, int y, int radius, int r, int g, int b);
 
+// ---------------------Ellipse---------------------------
+void ellipseMidPoint(int x, int y, int A, int B, int r, int g, int b);
+
+void fourWaySymmetry(int cx, int cy, int x, int y, int r, int g, int b);
 void eightWaySymmetry(int cx, int cy, int x, int y, int r, int g, int b);
 
 #endif //CGLAB_CIRCLE_H
