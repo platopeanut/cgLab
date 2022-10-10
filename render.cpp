@@ -8,10 +8,15 @@
 #include "./draw/others.h"
 #include "./draw/circle.h"
 
+#define min(a, b) (a) > (b) ? (b) : (a)
+
 int twoPoints[4] = { -1, -1, -1, -1 };
 int adjustPoints[4] = {-1, -1, -1, -1};
 bool lock = false;
 Byte* pFrame;
+
+// 绘制模式：1: ellipseMidPoint, 2: circleMidPoint2, 3: circleBresenham
+int mode = 1;
 
 
 void adjust() {
@@ -32,6 +37,7 @@ void adjust() {
 }
 
 void init() {
+    setWindowTitle("mode:1 ellipse MidPoint");
     pFrame = (Byte*) malloc(sizeof(Byte) * WIDTH * HEIGHT * 4);
 }
 
@@ -67,7 +73,12 @@ void onMouseUp(WORD x, WORD y) {
     int cy = (adjustPoints[1] + adjustPoints[3]) / 2;
     int a = (adjustPoints[2] - adjustPoints[0]) / 2;
     int b = (adjustPoints[1] - adjustPoints[3]) / 2;
-    ellipseMidPoint(cx, cy, a, b, 255, 0, 0);
+    if (mode == 1)
+        ellipseMidPoint(cx, cy, a, b, 255, 0, 0);
+    else if (mode == 2)
+        circleMidPoint2(cx, cy, min(a, b), 255, 0, 0);
+    else if (mode == 3)
+        circleBresenham(cx, cy, min(a, b), 255, 0, 0);
     update();
     for (int & twoPoint : twoPoints) {
         twoPoint = -1;
@@ -76,5 +87,16 @@ void onMouseUp(WORD x, WORD y) {
 }
 
 void onKeyDown(WPARAM key) {
-
+    if (key == '1') {
+        mode = 1;
+        setWindowTitle("mode:1 ellipse MidPoint");
+    }
+    else if (key == '2') {
+        mode = 2;
+        setWindowTitle("mode:2 circle MidPoint");
+    }
+    else if (key == '3') {
+        mode = 3;
+        setWindowTitle("mode:3 circle Bresenham");
+    }
 }
