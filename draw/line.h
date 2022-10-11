@@ -4,7 +4,7 @@
 * @Email: platopeanut@gmail.com
 */
 
-#ifndef CGLAB_LINE_H
+#ifndef CGLAB_LINECLIPPING_H
 #define CGLAB_LINE_H
 
 // 定义画线函数的函数指针类型
@@ -29,4 +29,4 @@ double sampleColorWeighted(double k, double mUp, double mDown, int x, int y);
 void lineSimpleAntiAliasing(int x0, int y0, int x1, int y1, int r, int g, int b, int width=1, int mode = 0, int samples=2);
 
 
-#endif //CGLAB_LINE_H
+#endif //CGLAB_LINECLIPPING_H

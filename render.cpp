@@ -5,98 +5,56 @@
 */
 
 #include "./display/win32.h"
-#include "./draw/others.h"
-#include "./draw/circle.h"
+#include "./draw/line.h"
+#include "./clipping/window.h"
+#include "./clipping/lineClipping.h"
+#include <iostream>
 
-#define min(a, b) (a) > (b) ? (b) : (a)
+// TODO: 添加事件：右键"down-move-up"可以移动window
 
-int twoPoints[4] = { -1, -1, -1, -1 };
-int adjustPoints[4] = {-1, -1, -1, -1};
-bool lock = false;
-Byte* pFrame;
-
-// 绘制模式：1: ellipseMidPoint, 2: circleMidPoint2, 3: circleBresenham
-int mode = 1;
-
-
-void adjust() {
-    adjustPoints[0] = twoPoints[0];
-    adjustPoints[1] = HEIGHT - twoPoints[1];
-    adjustPoints[2] = twoPoints[2];
-    adjustPoints[3] = HEIGHT - twoPoints[3];
-    if (adjustPoints[0] > adjustPoints[2]) {
-        int tmp = adjustPoints[0];
-        adjustPoints[0] = adjustPoints[2];
-        adjustPoints[2] = tmp;
-    }
-    if (adjustPoints[1] < adjustPoints[3]) {
-        int tmp = adjustPoints[1];
-        adjustPoints[1] = adjustPoints[3];
-        adjustPoints[3] = tmp;
-    }
-}
+BBox_t window = {150, 450, 200, 400};
+Line_t line = {-1, -1, -1, -1};
 
 void init() {
-    setWindowTitle("mode:1 ellipse MidPoint");
-    pFrame = (Byte*) malloc(sizeof(Byte) * WIDTH * HEIGHT * 4);
+    drawBBox(&window, 255, 255, 255);
 }
 
-void destroy() {
-    free(pFrame);
-}
+void destroy() {}
 
 void onMouseDown(WORD x, WORD y) {
-    if (twoPoints[0] == -1 && twoPoints[1] == -1) {
-        twoPoints[0] = (int) x;
-        twoPoints[1] = (int) y;
-        lock = true;
-        getFrame(pFrame);
+    y = HEIGHT - y;
+    std::cout << pointClipping(&window, x, y) << " |" << x << "," << y << std::endl;
+    if (line.x1 == -1) {
+        line.x1 = x;
+        line.y1 = y;
+    } else {
+        line.x2 = x;
+        line.y2 = y;
+        Line_t cutLine;
+        lineClippingCohenSutherland(&window, &line, &cutLine);
+        if (cutLine.x1 != -1) {
+            if (abs(cutLine.x1 - line.x1) > abs(cutLine.x2 - line.x1)) {
+                // swap
+                int tmp = cutLine.x1;
+                cutLine.x1 = cutLine.x2;
+                cutLine.x2 = tmp;
+                tmp = cutLine.y1;
+                cutLine.y1 = cutLine.y2;
+                cutLine.y2 = tmp;
+            }
+            lineDDA2(line.x1, line.y1, cutLine.x1, cutLine.y1, 255, 0, 0);
+            lineDDA2(cutLine.x1, cutLine.y1, cutLine.x2, cutLine.y2, 0, 255, 0);
+            lineDDA2(cutLine.x2, cutLine.y2, line.x2, line.y2, 255, 0, 0);
+        } else {
+            lineDDA2(line.x1, line.y1, line.x2, line.y2, 255, 0, 0);
+        }
+        line.x1 = -1;
+        update();
     }
 }
 
-void onMouseMove(WORD x, WORD y) {
-    if (!lock) return;
-    setFrame(pFrame);
-    twoPoints[2] = x;
-    twoPoints[3] = y;
-    adjust();
-    squareSimple(adjustPoints[0], adjustPoints[1], adjustPoints[2], adjustPoints[3], 255, 0, 0);
-    update();
-}
+void onMouseMove(WORD x, WORD y) {}
 
-void onMouseUp(WORD x, WORD y) {
-    twoPoints[2] = x;
-    twoPoints[3] = y;
-    adjust();
-    setFrame(pFrame);
-    int cx = (adjustPoints[0] + adjustPoints[2]) / 2;
-    int cy = (adjustPoints[1] + adjustPoints[3]) / 2;
-    int a = (adjustPoints[2] - adjustPoints[0]) / 2;
-    int b = (adjustPoints[1] - adjustPoints[3]) / 2;
-    if (mode == 1)
-        ellipseMidPoint(cx, cy, a, b, 255, 0, 0);
-    else if (mode == 2)
-        circleMidPoint2(cx, cy, min(a, b), 255, 0, 0);
-    else if (mode == 3)
-        circleBresenham(cx, cy, min(a, b), 255, 0, 0);
-    update();
-    for (int & twoPoint : twoPoints) {
-        twoPoint = -1;
-    }
-    lock = false;
-}
+void onMouseUp(WORD x, WORD y) {}
 
-void onKeyDown(WPARAM key) {
-    if (key == '1') {
-        mode = 1;
-        setWindowTitle("mode:1 ellipse MidPoint");
-    }
-    else if (key == '2') {
-        mode = 2;
-        setWindowTitle("mode:2 circle MidPoint");
-    }
-    else if (key == '3') {
-        mode = 3;
-        setWindowTitle("mode:3 circle Bresenham");
-    }
-}
+void onKeyDown(WPARAM key) {}
