@@ -16,59 +16,44 @@ rgCode_t regionEncode(const BBox_t *bbox, int x, int y) {
 }
 
 void lineClippingCohenSutherland(const BBox_t *bbox, const Line_t *srcLine, Line_t *dstLine) {
-    dstLine->x1 = srcLine->x1;
-    dstLine->y1 = srcLine->y1;
-    dstLine->x2 = srcLine->x2;
-    dstLine->y2 = srcLine->y2;
-    rgCode_t c1 = regionEncode(bbox, dstLine->x1, dstLine->y1);
-    rgCode_t c2 = regionEncode(bbox, dstLine->x2, dstLine->y2);
-    while (true) {
-        while (c1 != 0) {
-            if ((c1 & c2) != 0) {
-                dstLine->x1 = -1;   // set invalid
+    for (int i = 0; i < 4; ++i) {
+        dstLine->data[i] = srcLine->data[i];
+    }
+    rgCode_t codes[2] = {
+            regionEncode(bbox, dstLine->data[0], dstLine->data[1]),
+            regionEncode(bbox, dstLine->data[2], dstLine->data[3])
+    };
+    for (int i = 0; i < 2; ++i) {
+        while (codes[i] != 0) {
+            if ((codes[0] & codes[1]) != 0) {
+                dstLine->data[0] = -1;   // set invalid
                 return;
             }
-            if ((c1 & 0b0001) != 0) {
-                dstLine->y1 += (dstLine->y2 - dstLine->y1)
-                               * (bbox->xMin - dstLine->x1)
-                               / (dstLine->x2 - dstLine->x1);
-                dstLine->x1 = bbox->xMin;
-                c1 = regionEncode(bbox, dstLine->x1, dstLine->y1);
+            if ((codes[i] & 0b0001) != 0) {
+                dstLine->data[i*2+1] += (dstLine->data[3] - dstLine->data[1])
+                               * (bbox->xMin - dstLine->data[i*2])
+                               / (dstLine->data[2] - dstLine->data[0]);
+                dstLine->data[i*2] = bbox->xMin;
             }
-            else if ((c1 & 0b0010) != 0) {
-                dstLine->y1 += (dstLine->y2 - dstLine->y1)
-                               * (bbox->xMax - dstLine->x1)
-                               / (dstLine->x2 - dstLine->x1);
-                dstLine->x1 = bbox->xMax;
-                c1 = regionEncode(bbox, dstLine->x1, dstLine->y1);
+            else if ((codes[i] & 0b0010) != 0) {
+                dstLine->data[i*2+1] += (dstLine->data[3] - dstLine->data[1])
+                               * (bbox->xMax - dstLine->data[i*2])
+                               / (dstLine->data[2] - dstLine->data[0]);
+                dstLine->data[i*2] = bbox->xMax;
             }
-            else if ((c1 & 0b0100) != 0) {
-                dstLine->x1 += (dstLine->x2 - dstLine->x1)
-                               * (bbox->yMin - dstLine->y1)
-                               / (dstLine->y2 - dstLine->y1);
-                dstLine->y1 = bbox->yMin;
-                c1 = regionEncode(bbox, dstLine->x1, dstLine->y1);
+            else if ((codes[i] & 0b0100) != 0) {
+                dstLine->data[i*2] += (dstLine->data[2] - dstLine->data[0])
+                               * (bbox->yMin - dstLine->data[i*2+1])
+                               / (dstLine->data[3] - dstLine->data[1]);
+                dstLine->data[i*2+1] = bbox->yMin;
             }
             else {
-                dstLine->x1 += (dstLine->x2 - dstLine->x1)
-                               * (bbox->yMax - dstLine->y1)
-                               / (dstLine->y2 - dstLine->y1);
-                dstLine->y1 = bbox->yMax;
-                c1 = regionEncode(bbox, dstLine->x1, dstLine->y1);
+                dstLine->data[i*2] += (dstLine->data[2] - dstLine->data[0])
+                               * (bbox->yMax - dstLine->data[i*2+1])
+                               / (dstLine->data[3] - dstLine->data[1]);
+                dstLine->data[i*2+1] = bbox->yMax;
             }
+            codes[i] = regionEncode(bbox, dstLine->data[i*2], dstLine->data[i*2+1]);
         }
-        if (c2 == 0) return;
-        // swap x1, x2
-        int tmp1 = dstLine->x1;
-        dstLine->x1 = dstLine->x2;
-        dstLine->x2 = tmp1;
-        // swap y1, y2
-        tmp1 = dstLine->y1;
-        dstLine->y1 = dstLine->y2;
-        dstLine->y2 = tmp1;
-        // swap c1, c2
-        rgCode_t tmp2 = c1;
-        c1 = c2;
-        c2 = tmp2;
     }
 }

@@ -21,10 +21,7 @@ typedef struct {
 // line structure
 // 定义x1为-1时该line无效
 typedef struct {
-    int x1;
-    int y1;
-    int x2;
-    int y2;
+    int data[4];    // [x1, y1, x2, y2]
 } Line_t;
 // polygon structure
 typedef struct {
