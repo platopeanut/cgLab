@@ -9,6 +9,11 @@
 
 #include "./window.h"
 
+struct Point {
+    int x;
+    int y;
+};
+
 /**
  * @param bbox          指定的窗口
  * @param polygon       待裁剪的多边形
@@ -17,5 +22,8 @@
  * Note: 调用者应该手动free返回的数组
  */
 Polygon_t* polygonClippingWeilerAthenton(const BBox_t* bbox, const Polygon_t* polygon, int* returnSize);
+
+// 释放polygon数组
+void freePolygons(Polygon_t* polygons, int size);
 
 #endif //CGLAB_POLYGONCLIPPING_H

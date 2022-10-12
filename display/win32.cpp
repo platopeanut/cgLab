@@ -108,6 +108,14 @@ WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
             onMouseUp(LOWORD(lParam), HIWORD(lParam));
         }
             break;
+        case WM_RBUTTONDOWN: {
+            onRMouseDown(LOWORD(lParam), HIWORD(lParam));
+        }
+            break;
+        case WM_RBUTTONUP: {
+            onRMouseUp(LOWORD(lParam), HIWORD(lParam));
+        }
+            break;
         case WM_TIMER: {
             onTimer(wParam);
         }
