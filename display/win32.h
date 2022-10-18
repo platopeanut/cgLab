@@ -44,6 +44,8 @@ void setWindowTitle(const std::string& title);
 void getFrame(Byte* pFrame);
 // 设置当前帧，需要自己提前分配空间，大小为：WIDTH * HEIGHT * 4(Byte)
 void setFrame(const Byte* pFrame);
+// 获取像素
+void getPixel(int i, int j, int* r, int* g, int* b);
 
 /* External Interface (Implemented in main.cpp) */
 void init();

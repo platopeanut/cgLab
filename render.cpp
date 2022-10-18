@@ -5,98 +5,74 @@
 */
 
 #include "./display/win32.h"
-#include "./draw/others.h"
-#include "./draw/circle.h"
+#include "./draw/polygon.h"
+#include <cstdlib>
+#include <vector>
+#include <iostream>
 
 #define min(a, b) (a) > (b) ? (b) : (a)
 
-int twoPoints[4] = { -1, -1, -1, -1 };
-int adjustPoints[4] = {-1, -1, -1, -1};
-bool lock = false;
-Byte* pFrame;
-
-// 绘制模式：1: ellipseMidPoint, 2: circleMidPoint2, 3: circleBresenham
-int mode = 1;
-
-
-void adjust() {
-    adjustPoints[0] = twoPoints[0];
-    adjustPoints[1] = HEIGHT - twoPoints[1];
-    adjustPoints[2] = twoPoints[2];
-    adjustPoints[3] = HEIGHT - twoPoints[3];
-    if (adjustPoints[0] > adjustPoints[2]) {
-        int tmp = adjustPoints[0];
-        adjustPoints[0] = adjustPoints[2];
-        adjustPoints[2] = tmp;
+std::vector<Point2I> points;
+Point2I* convertToArray() {
+    auto* p = (Point2I*) malloc(sizeof(Point2I) * points.size());
+    for (int i = 0; i < points.size(); ++i) {
+        p[i].x = points[i].x;
+        p[i].y = points[i].y;
     }
-    if (adjustPoints[1] < adjustPoints[3]) {
-        int tmp = adjustPoints[1];
-        adjustPoints[1] = adjustPoints[3];
-        adjustPoints[3] = tmp;
-    }
+    return p;
 }
+Bucket* AET = nullptr;
+int mode = 0;   // 0画polygon    1种子填充
+
 
 void init() {
-    setWindowTitle("mode:1 ellipse MidPoint");
-    pFrame = (Byte*) malloc(sizeof(Byte) * WIDTH * HEIGHT * 4);
+//    int x[] = {2,9,12,12,11,10,8,5,5,4,2,1,1};
+//    int y[] = {10,10,7,2,1,1,3,3,2,1,1,2,9};
+//    int size = sizeof(x) / sizeof(int);
+//    auto* ps = (Point2I*) malloc(sizeof(Point2I) * size);
+//    for (int i = 0; i < size; ++i) {
+//        ps[i].x = x[i];
+//        ps[i].y = y[i];
+//    }
+//    Bucket* aet = polygonScanLine(ps, size, 255, 0, 0);
+//    polygonSeedFilling(aet, 7, 8, 0, 255, 0);
 }
 
 void destroy() {
-    free(pFrame);
+
 }
 
 void onMouseDown(WORD x, WORD y) {
-    if (twoPoints[0] == -1 && twoPoints[1] == -1) {
-        twoPoints[0] = (int) x;
-        twoPoints[1] = (int) y;
-        lock = true;
-        getFrame(pFrame);
+    y = HEIGHT - y;
+    if (mode == 0) {
+        setPixel(x, y, 255, 0, 0);
+        update();
+        points.emplace_back(x, y);
+    }
+    else if (mode == 1 && AET != nullptr) {
+        setPixel(x, y, 0, 255, 0);
+        polygonSeedFilling(AET, x, y, 0, 255, 0);
+//        shaderAET(AET, 0, 255, 0);
+        Bucket::freeBuckets(AET);
+        AET = nullptr;
+        update();
     }
 }
 
-void onMouseMove(WORD x, WORD y) {
-    if (!lock) return;
-    setFrame(pFrame);
-    twoPoints[2] = x;
-    twoPoints[3] = y;
-    adjust();
-    squareSimple(adjustPoints[0], adjustPoints[1], adjustPoints[2], adjustPoints[3], 255, 0, 0);
-    update();
-}
+void onMouseMove(WORD x, WORD y) {}
 
-void onMouseUp(WORD x, WORD y) {
-    twoPoints[2] = x;
-    twoPoints[3] = y;
-    adjust();
-    setFrame(pFrame);
-    int cx = (adjustPoints[0] + adjustPoints[2]) / 2;
-    int cy = (adjustPoints[1] + adjustPoints[3]) / 2;
-    int a = (adjustPoints[2] - adjustPoints[0]) / 2;
-    int b = (adjustPoints[1] - adjustPoints[3]) / 2;
-    if (mode == 1)
-        ellipseMidPoint(cx, cy, a, b, 255, 0, 0);
-    else if (mode == 2)
-        circleMidPoint2(cx, cy, min(a, b), 255, 0, 0);
-    else if (mode == 3)
-        circleBresenham(cx, cy, min(a, b), 255, 0, 0);
-    update();
-    for (int & twoPoint : twoPoints) {
-        twoPoint = -1;
-    }
-    lock = false;
-}
+void onMouseUp(WORD x, WORD y) {}
 
 void onKeyDown(WPARAM key) {
-    if (key == '1') {
-        mode = 1;
-        setWindowTitle("mode:1 ellipse MidPoint");
-    }
-    else if (key == '2') {
-        mode = 2;
-        setWindowTitle("mode:2 circle MidPoint");
-    }
-    else if (key == '3') {
-        mode = 3;
-        setWindowTitle("mode:3 circle Bresenham");
+    if (key == '0') mode = 0;
+    if (key == '1') mode = 1;
+    if (key == VK_RETURN) {
+        if (mode == 0) {
+            Point2I* p = convertToArray();
+            AET = polygonScanLine(p, (int) points.size(), 255, 0, 0);
+            update();
+            points.clear();
+            free(p);
+        }
     }
 }

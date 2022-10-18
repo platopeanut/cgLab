@@ -32,7 +32,7 @@ chp2: Draw Primitive
 - 区域填充算法
   - [ ] 4连通
   - [ ] 8连通
-  - [ ] 种子填充算法
+  - [x] 种子填充算法
 - Antialiasing
   - [x] Unweighted Area Sampling
   - [x] Weighted Area Sampling

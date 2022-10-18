@@ -49,3 +49,9 @@ void setFrame(const Byte *pFrame) {
         pFrameBuffer[i] = pFrame[i];
     }
 }
+
+void getPixel(int i, int j, int* r, int* g, int* b) {
+    *b = pFrameBuffer[(j * WIDTH + i) * 4    ];
+    *g = pFrameBuffer[(j * WIDTH + i) * 4 + 1];
+    *r = pFrameBuffer[(j * WIDTH + i) * 4 + 2];
+}

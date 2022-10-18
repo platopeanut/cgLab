@@ -146,7 +146,7 @@ void shaderAET(Bucket *AET, int r, int g, int b) {
     }
 }
 
-void polygonScanLine(Point2I *polygon, int size, int r, int g, int b) {
+Bucket* polygonScanLine(Point2I *polygon, int size, int r, int g, int b) {
     Bucket* NET = buildNET(polygon, size);
 //    std::cout << "NET:" << std::endl;
 //    std::cout << *NET;
@@ -154,5 +154,75 @@ void polygonScanLine(Point2I *polygon, int size, int r, int g, int b) {
 //    std::cout << "AET:" << std::endl;
 //    std::cout << *NET << std::endl;
     shaderAET(NET, r, g, b);
-    Bucket::freeBuckets(NET);
+    return NET;
 }
+
+void getLRBorderFromAET(Bucket *AET, int x, int y, int* left, int* right) {
+    Bucket* currBucket = AET;
+    while (currBucket != nullptr && currBucket->scanLine != y)
+        currBucket = currBucket->next;
+    if (currBucket == nullptr) {
+        *left = -1;
+        *right = -1;
+        return;
+    }
+    Triple* currTri = currBucket->head;
+    while (currTri != nullptr && currTri->next != nullptr) {
+        if (x >= currTri->x && x <= currTri->next->x)
+            break;
+        currTri = currTri->next->next;
+    }
+    if (currTri == nullptr) {
+        *left = -1;
+        *right = -1;
+        return;
+    }
+    *left = (int) std::round(currTri->x);
+    *right = (int) std::round(currTri->next->x);
+}
+
+void polygonSeedFilling(Bucket *AET, int seedX, int seedY, int r, int g, int b) {
+//    std::cout << seedX << ", " << seedY << std::endl;
+//    std::cout << *AET << std::endl;
+    int left, right;
+    getLRBorderFromAET(AET, seedX, seedY, &left, &right);
+//    std::cout << left << " " << right << std::endl;
+    if (left == -1 && right == -1) return;
+    std::vector<Seg> stack;
+    stack.emplace_back(left, right, seedY);
+    while (!stack.empty()) {
+        Seg seg = stack.back();
+//        std::cout << seg.left << ", " << seg.right << ", " << seg.y << std::endl;
+        stack.pop_back();
+        int upR = -1, downR = -1;
+        for (int x = seg.left; x <= seg.right; ++x) {
+            setPixel(x, seg.y, r, g, b);
+            if (x > upR) {
+                getLRBorderFromAET(AET, x, seg.y - 1, &left, &right);
+                if (left == -1 && right == -1) {
+                    continue;
+                }
+                upR = right;
+                int tmpR, tmpG, tmpB;
+                getPixel(x, seg.y - 1, &tmpR, &tmpG, &tmpB);
+                if (!(tmpR == r && tmpG == g && tmpB == b)) {
+                    stack.emplace_back(left, right, seg.y - 1);
+                }
+            }
+            if (x > downR) {
+                getLRBorderFromAET(AET, x, seg.y + 1, &left, &right);
+                if (left == -1 && right == -1) {
+                    continue;
+                }
+                upR = right;
+                int tmpR, tmpG, tmpB;
+                getPixel(x, seg.y + 1, &tmpR, &tmpG, &tmpB);
+                if (!(tmpR == r && tmpG == g && tmpB == b)) {
+                    stack.emplace_back(left, right, seg.y + 1);
+                }
+            }
+        }
+    }
+}
+
+Seg::Seg(int left, int right, int y) : left(left), right(right), y(y) {}
