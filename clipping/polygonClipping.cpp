@@ -93,15 +93,15 @@ Polygon_t *polygonClippingWeilerAthenton(const BBox_t *bbox, const Polygon_t *po
             }
         }
     }
-    std::cout << "\nPolygon Link: ";
-    for (const auto &item: polygonLink)
-        std::cout << item << ", ";
-    std::cout << "\nWindow Link: ";
-    for (const auto &item: windowLink)
-        std::cout << item << ", ";
-    std::cout << "\nMarks: ";
-    for (const auto &item: marks)
-        std::cout << item << ", ";
+//    std::cout << "\nPolygon Link: ";
+//    for (const auto &item: polygonLink)
+//        std::cout << item << ", ";
+//    std::cout << "\nWindow Link: ";
+//    for (const auto &item: windowLink)
+//        std::cout << item << ", ";
+//    std::cout << "\nMarks: ";
+//    for (const auto &item: marks)
+//        std::cout << item << ", ";
     std::vector<std::vector<int>> indexLoops;
     std::vector<int>* links[2] = {&polygonLink, &windowLink};
     while (true) {
@@ -137,11 +137,11 @@ Polygon_t *polygonClippingWeilerAthenton(const BBox_t *bbox, const Polygon_t *po
         }
         indexLoops.push_back(indexLoop);
     }
-    for (const auto &loop: indexLoops) {
-        std::cout << "\nloop: ";
-        for (const auto &item: loop)
-            std::cout << item << ", ";
-    }
+//    for (const auto &loop: indexLoops) {
+//        std::cout << "\nloop: ";
+//        for (const auto &item: loop)
+//            std::cout << item << ", ";
+//    }
     *returnSize = (int) indexLoops.size();
     auto res = (Polygon_t*) malloc(sizeof(Polygon_t) * (*returnSize));
     for (int i = 0; i < (*returnSize); ++i) {
