@@ -270,3 +270,19 @@ double sampleColorWeighted(double k, double mUp, double mDown, int x, int y) {
     }
     return value * 1.0 / 16;
 }
+
+void dashLineDDA2(int x0, int y0, int x1, int y1, int r, int g, int b) {
+    double incX, incY, x, y;
+    int steps = std::abs(x0 - x1) > std::abs(y0 - y1) ? std::abs(x1 - x0) : std::abs(y1 - y0);
+    incX = (x1 - x0) * 1.0 / steps;
+    incY = (y1 - y0) * 1.0 / steps;
+    x = x0;
+    y = y0;
+    for (int i = 0; i < steps; i++) {
+        if (i % 10 < 7) {
+            setPixel((int) x, (int) y, r, g, b);
+        }
+        x += incX;
+        y += incY;
+    }
+}

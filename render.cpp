@@ -6,11 +6,9 @@
 
 #include "./display/win32.h"
 #include "./draw/polygon.h"
+#include "./draw/line.h"
 #include <cstdlib>
 #include <vector>
-#include <iostream>
-
-#define min(a, b) (a) > (b) ? (b) : (a)
 
 std::vector<Point2I> points;
 Point2I* convertToArray() {
@@ -23,7 +21,24 @@ Point2I* convertToArray() {
 }
 Bucket* AET = nullptr;
 int mode = 0;   // 0画polygon    1种子填充
+int lastX = -1, lastY = -1;
 
+// 绘制color=(r,g,b)的多变形边框
+void drawBorder(int r, int g, int b) {
+    auto size = points.size();
+    if (size > 1) {
+        for (int i = 0; i < points.size() - 1; ++i) {
+            lineDDA2(points[i].x, points[i].y, points[i+1].x, points[i+1].y, r, g, b);
+        }
+    }
+    if (size > 2) {
+        dashLineDDA2(points[size - 1].x,
+                     points[size - 1].y,
+                     points[0].x,
+                     points[0].y,
+                     r, g, b);
+    }
+}
 
 void init() {
 //    int x[] = {2,9,12,12,11,10,8,5,5,4,2,1,1};
@@ -45,21 +60,47 @@ void destroy() {
 void onMouseDown(WORD x, WORD y) {
     y = HEIGHT - y;
     if (mode == 0) {
-        setPixel(x, y, 255, 0, 0);
-        update();
+        if (points.empty()) {
+            setPixel(x, y, 255, 255, 255);
+        }
+        if (points.size() == 1) {
+            setPixel(points[0].x, points[0].y, 0, 0, 0);
+        }
+
+        drawBorder(0, 0, 0);
         points.emplace_back(x, y);
+        drawBorder(255, 255, 255);
+        update();
     }
     else if (mode == 1 && AET != nullptr) {
-        setPixel(x, y, 0, 255, 0);
-        polygonSeedFilling(AET, x, y, 0, 255, 0);
-//        shaderAET(AET, 0, 255, 0);
+        // way1: scan-line filling
+        shaderAET(AET, 0, 255, 0);
+
+        // way2: seed filling
+//        polygonSeedFilling(AET, x, y, 0, 255, 0);
         Bucket::freeBuckets(AET);
         AET = nullptr;
         update();
     }
 }
 
-void onMouseMove(WORD x, WORD y) {}
+void onMouseMove(WORD x, WORD y) {
+    y = HEIGHT - y;
+    if (!points.empty()) {
+        Point2I lastP = points.back();
+        if (lastX != -1 && lastY != -1) {
+            dashLineDDA2(lastP.x, lastP.y, lastX, lastY, 0, 0, 0);
+            dashLineDDA2(lastX, lastY, points[0].x, points[0].y, 0, 0, 0);
+            drawBorder(255, 255, 255);
+        }
+        dashLineDDA2(lastP.x, lastP.y, x, y, 208, 64, 30);
+        if (points.size() > 2)
+            dashLineDDA2(x, y, points[0].x, points[0].y, 208, 64, 30);
+        lastX = x;
+        lastY = y;
+        update();
+    }
+}
 
 void onMouseUp(WORD x, WORD y) {}
 
@@ -68,6 +109,10 @@ void onKeyDown(WPARAM key) {
     if (key == '1') mode = 1;
     if (key == VK_RETURN) {
         if (mode == 0) {
+            drawBorder(0, 0, 0);
+            Point2I lastP = points.back();
+            dashLineDDA2(lastP.x, lastP.y, lastX, lastY, 0, 0, 0);
+            dashLineDDA2(lastX, lastY, points[0].x, points[0].y, 0, 0, 0);
             Point2I* p = convertToArray();
             AET = polygonScanLine(p, (int) points.size(), 255, 0, 0);
             update();
