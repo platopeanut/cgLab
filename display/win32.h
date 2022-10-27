@@ -51,9 +51,9 @@ void destroy();
 void onKeyDown(WPARAM key);
 void onMouseMove(WORD x, WORD y);
 void onMouseDown(WORD x, WORD y);
-void onMouseUp(WORD x, WORD y);
-void onRMouseDown(WORD x, WORD y);
-void onRMouseUp(WORD x, WORD y);
+void onMouseUp(__attribute__((unused)) WORD x, __attribute__((unused)) WORD y);
+void onRMouseDown(__attribute__((unused)) WORD x, __attribute__((unused)) WORD y);
+void onRMouseUp(__attribute__((unused)) WORD x, __attribute__((unused)) WORD y);
 void onTimer(WPARAM id);
 
 

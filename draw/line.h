@@ -14,6 +14,8 @@ void lineSimple(int x0, int y0, int x1, int y1, int r, int g, int b);
 void lineSimple2(int x0, int y0, int x1, int y1, int r, int g, int b);
 void lineDDA(int x0, int y0, int x1, int y1, int r, int g, int b);
 void lineDDA2(int x0, int y0, int x1, int y1, int r, int g, int b);
+// 画虚线
+void dashLineDDA2(int x0, int y0, int x1, int y1, int r, int g, int b);
 void lineBresenham(int x0, int y0, int x1, int y1, int r, int g, int b);
 void lineBresenham2(int x0, int y0, int x1, int y1, int r, int g, int b);
 

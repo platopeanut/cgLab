@@ -41,7 +41,7 @@ freePolygons(polygons, size);
 */
 
 #include "./display/win32.h"
-#include "./draw/line.h"
+#include "./drawScene/line.h"
 #include "./clipping/window.h"
 #include "./clipping/lineClipping.h"
 #include <iostream>

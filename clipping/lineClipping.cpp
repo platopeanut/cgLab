@@ -56,4 +56,6 @@ void lineClippingCohenSutherland(const BBox_t *bbox, const Line_t *srcLine, Line
             codes[i] = regionEncode(bbox, dstLine->data[i*2], dstLine->data[i*2+1]);
         }
     }
+//    if (dstLine->data[0] == dstLine->data[2] && dstLine->data[1] == dstLine->data[3])
+//        dstLine->data[0] = -1;
 }
