@@ -19,7 +19,27 @@ int indexOf(const std::vector<int>& v, int value) {
     return -1;
 }
 
+void adjustPos(const BBox_t* bbox, int& x, int& y) {
+    if (std::abs(x - bbox->xMin) <= 1) x = bbox->xMin;
+    else if (std::abs(x - bbox->xMax) <= 1) x = bbox->xMax;
+    if (std::abs(y - bbox->yMin) <= 1) y = bbox->yMin;
+    else if (std::abs(y - bbox->yMax) <= 1) y = bbox->yMax;
+}
+
 Polygon_t *polygonClippingWeilerAthenton(const BBox_t *bbox, const Polygon_t *polygon, int *returnSize) {
+    // 如果全部顶点在bbox内部，则直接返回
+    bool isAllIn = true;
+    for (int i = 0; i < polygon->size; ++i)
+        if (regionEncode(bbox, polygon->x[i], polygon->y[i]) != 0b0000)
+            isAllIn = false;
+    if (isAllIn) {
+        *returnSize = 1;
+        return const_cast<Polygon_t *>(polygon);
+    }
+    // adjust
+    for (int i = 0; i < polygon->size; ++i) {
+        adjustPos(bbox, polygon->x[i], polygon->y[i]);
+    }
     int bboxX[4] = {bbox->xMin, bbox->xMin, bbox->xMax, bbox->xMax};
     int bboxY[4] = {bbox->yMin, bbox->yMax, bbox->yMax, bbox->yMin};
     std::vector<struct Point> intersect;

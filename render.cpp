@@ -264,7 +264,7 @@ void onKeyDown(WPARAM key) {
         if (key == VK_RIGHT) dx = 1;
         if (dx != 0 || dy != 0) {
             moveWindow(dx, dy);
-            draw(true);
+            draw();
         }
     }
 }
